@@ -20,6 +20,8 @@ $username = "@studentaanhuis.nl";
 $password = "";
 $passBase64Encoded = false; // if you don't want your password plain in the script you can base64 encode it.
 
+$debug = false;
+
 if ($passBase64Encoded) {
 	$password = base64_decode($password);
 }
@@ -36,8 +38,14 @@ if (file_exists("token.txt")) {
 	try {
 		$file = fopen("token.txt", "w+");
 		$loginSuccessful = $API->login($username, $password);
+
+		if ($debug) echo "(DEBUG) Login successful: ".$loginSuccessful.PHP_EOL;
+
 		if ($loginSuccessful) {
 			$token = $API->getToken();
+
+			if ($debug) echo "(DEBUG) Token: ".$token.PHP_EOL;
+
 			fwrite($file, $token);
 			fclose($file);
 
@@ -55,11 +63,19 @@ if (file_exists("token.txt")) {
 if ($token != "0") {
 	while ($continue) {
 		$loggedIn = $API->loggedIn();
+		if ($debug) echo "(DEBUG) Loggedin: ".$loggedIn.PHP_EOL;
 
 		if (!$loggedIn) {
+			if ($debug) echo "(DEBUG) Trying to relog".PHP_EOL;
+
 			$loginSuccessful = $API->login($username, $password);
 			if ($loginSuccessful) {
+				if ($debug) echo "(DEBUG) Login successful:".$loginSuccessful.PHP_EOL;
+
 				$token = $API->getToken();
+
+				if ($debug) echo "(DEBUG) Token: ".$token.PHP_EOL;
+
 				$file = fopen("token.txt", "w+");
 				fwrite($file, $token);
 				fclose($file);
@@ -73,10 +89,14 @@ if ($token != "0") {
 
 		$prikbordItems = $API->getPrikbordItems();
 
-		foreach ($prikbordItems as $prikbordItem) {
-			if (!$prikbordItem->gereageerd) {
-				$API->denyPrikbordItem($prikbordItem->id);
-				echo "Denied prikborditem with id: ".$prikbordItem->id.PHP_EOL;
+		if ($debug) echo "(DEBUG) PrikbordItemsAantal: ".count($prikbordItems).PHP_EOL;
+
+		if (count($prikbordItems) > 0) {
+			foreach ($prikbordItems as $prikbordItem) {
+				if (!$prikbordItem->gereageerd) {
+					$API->denyPrikbordItem($prikbordItem->id);
+					echo "Denied prikborditem with id: " . $prikbordItem->id . PHP_EOL;
+				}
 			}
 		}
 

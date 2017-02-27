@@ -38,7 +38,7 @@ class API {
 		$response = $this->web->get($url);
 		$loggedIn = json_decode($response);
 		if (isset($loggedIn->ingelogd)) {
-			return $loggedIn->ingelogd;
+			return ($loggedIn->ingelogd == "false") ? false : true;
 		} else {
 			return false;
 		}
