@@ -8,9 +8,11 @@
 
 include "web.class.php";
 include "API.class.php";
+include "pushbullet.class.php";
 
 $web = new web();
 $API = new API($web);
+$Pushbullet = new Pushbullet();
 $token = "0";
 
 $timeBetweenChecks = 300; // time in seconds, default 300 which means 5 minutes.
@@ -19,12 +21,26 @@ $continue = true; // determines if the appliaction should continue running.
 $username = "@studentaanhuis.nl";
 $password = "";
 $passBase64Encoded = false; // if you don't want your password plain in the script you can base64 encode it.
+//$loginTries = 5; // the amount of tries the script will do to login with your account, 0 = infinite (upcoming in next release?)
+
+$cityNames = ["Amsterdam", "Utrecht", "Groningen", "Eindhoven"]; // here you can place your city names which you will get a push notification of when enabled
+$receivePushNotification = false; // you can enable or disable push notifications here
+$pushBulletAccessToken = "o"; // this is the accessToken you can obtain at the website of pushbullet
 
 $debug = false;
 
 if ($passBase64Encoded) {
 	$password = base64_decode($password);
 }
+
+$cityNames = array_map('strtolower', $cityNames);
+
+if ($receivePushNotification == true && $pushBulletAccessToken == "o") {
+	echo "Invalid Pushbullet token, please verify your token or disable push notifications".PHP_EOL;
+	sleep(10);
+}
+
+$Pushbullet->setToken($pushBulletAccessToken);
 
 if (file_exists("token.txt")) {
 	try {
@@ -94,6 +110,15 @@ if ($token != "0") {
 		if (count($prikbordItems) > 0) {
 			foreach ($prikbordItems as $prikbordItem) {
 				if (!$prikbordItem->gereageerd) {
+					if ($receivePushNotification) {
+						$address = $prikbordItem->adres;
+						$city = strtolower(explode("  ", $address)[1]);
+						if (in_array($city, $cityNames)) {
+							$Pushbullet->sendPush("SAH Prikbord", "Type afspraak: {$prikbordItem->typeafspraak}".PHP_EOL."Adres: {$prikbordItem->adres}", "note");
+							echo $city;
+						}
+					}
+
 					$API->denyPrikbordItem($prikbordItem->id);
 					echo "Denied prikborditem with id: " . $prikbordItem->id . PHP_EOL;
 				}
