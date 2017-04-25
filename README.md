@@ -5,8 +5,12 @@ Once it finds an unanswered item it will deny that item.
 
 Within the newest version you can get a push notification of items that are in the list you can define yourself!
 
-## The following variables can or have to be modified.
+## Running the script
+You should run the file called ```main.php```, this will start the script. I tested this with PHP 5.6 and PHP 7.1.
+If it doesn't work for your version let me know with the specific error.
 
+
+## The following variables can or have to be modified.
 ### Time between checks
 This is the time (in seconds) it will wait before it checks the bulletin board.
 ```php
@@ -48,3 +52,6 @@ This variable can be ```true``` or ```false```. If this is set to ```true``` it 
 ```php
 $debug = false;
 ```
+
+## Problems?
+You can email me at arthursj@studentaanhuis.nl
