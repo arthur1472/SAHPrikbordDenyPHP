@@ -9,6 +9,8 @@
 class web
 {
 
+    private $response;
+
 	function __construct()
 	{
 	}
@@ -39,6 +41,7 @@ class web
 		//curl_setopt($ch, CURLOPT_HEADER, 1);
 
 		$result = curl_exec($ch);
+		$this->response = $result;
 
 		//$headerSent = curl_getinfo($ch, CURLINFO_HEADER_OUT );
 		//echo $headerSent.PHP_EOL."<br>"."<br>";
@@ -78,6 +81,7 @@ class web
 		//curl_setopt($ch, CURLOPT_HEADER, 1);
 
 		$result = curl_exec($ch);
+        $this->response = $result;
 
 		//$headerSent = curl_getinfo($ch, CURLINFO_HEADER_OUT );
 		//echo $headerSent.PHP_EOL."<br>"."<br>";
@@ -86,4 +90,11 @@ class web
 		curl_close($ch);
 		return $result;
 	}
+
+    public function getResponse()
+    {
+        return $this->response;
+    }
+
+
 }

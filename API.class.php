@@ -9,8 +9,9 @@
 class API {
 	private $web;
 	private $token;
+	public $raw;
 
-	function __construct($web, $token = null)
+	function __construct(web $web, $token = null)
 	{
 		$this->web = $web;
 
@@ -24,6 +25,8 @@ class API {
 
 		$variables = array("post" => "email=$username&password=$password");
 		$data = json_decode($this->web->post($url, $variables));
+
+		$this->raw = $this->web->getResponse();
 
 		if (isset($data->token)) {
 			$this->setToken($data->token);
@@ -56,14 +59,11 @@ class API {
 		$response = $this->web->get($url);
 	}
 
-	public function getToken()
-	{
+	public function getToken() {
 		return $this->token;
 	}
 
 	public function setToken($token) {
 		$this->token = $token;
 	}
-
-
 }
